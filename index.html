@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>吹气声分类器 - Blow Sound Classifier</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🎤 吹气声分类器</h1>
+
+        <!-- 安全警告 -->
+        <div id="security-warning" class="warning-banner" style="display: none;">
+            <strong>⚠️ 麦克风访问受限</strong>
+            <p>由于浏览器安全策略,从局域网 IP 通过 HTTP 访问时无法使用麦克风。</p>
+            <p><strong>解决方案:</strong></p>
+            <ul>
+                <li>✅ 使用 <code>http://localhost:3355</code> 访问</li>
+                <li>✅ 或在 Chrome 中启用: <code>chrome://flags/#unsafely-treat-insecure-origin-as-secure</code></li>
+                <li>✅ 或配置 HTTPS (查看 MICROPHONE_PERMISSION.md)</li>
+            </ul>
+        </div>
+
+        <!-- 数据采集模式 -->
+        <section id="collection-section">
+            <h2>1. 数据采集</h2>
+            <div class="controls">
+                <div class="label-selection">
+                    <label>
+                        <input type="radio" name="label" value="blow" checked>
+                        吹气声 (Blow)
+                    </label>
+                    <label>
+                        <input type="radio" name="label" value="not_blow">
+                        非吹气声 (Not Blow)
+                    </label>
+                </div>
+                <button id="start-record" class="btn btn-primary">开始录制</button>
+                <button id="stop-record" class="btn btn-secondary" disabled>停止录制</button>
+                <button id="clear-data" class="btn btn-danger">清空数据</button>
+            </div>
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-label">吹气声样本:</span>
+                    <span id="blow-count" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">非吹气声样本:</span>
+                    <span id="not-blow-count" class="stat-value">0</span>
+                </div>
+            </div>
+            <canvas id="waveform-canvas"></canvas>
+        </section>
+
+        <!-- 模型训练模式 -->
+        <section id="training-section">
+            <h2>2. 模型训练</h2>
+            <div class="controls">
+                <div class="param-group">
+                    <label>训练轮数: <input type="number" id="epochs" value="50" min="10" max="200"></label>
+                    <label>批次大小: <input type="number" id="batch-size" value="32" min="8" max="128"></label>
+                </div>
+                <button id="train-model" class="btn btn-primary">开始训练</button>
+                <button id="save-model" class="btn btn-success" disabled>保存模型</button>
+            </div>
+            <div id="training-status"></div>
+            <div class="metrics">
+                <div class="metric-item">
+                    <span>准确率:</span>
+                    <span id="accuracy">-</span>
+                </div>
+                <div class="metric-item">
+                    <span>损失:</span>
+                    <span id="loss">-</span>
+                </div>
+            </div>
+            <canvas id="training-chart"></canvas>
+        </section>
+
+        <!-- 实时推理模式 -->
+        <section id="inference-section">
+            <h2>3. 实时推理</h2>
+            <div class="controls">
+                <button id="load-model" class="btn btn-primary">加载模型</button>
+                <button id="start-inference" class="btn btn-success" disabled>开始检测</button>
+                <button id="stop-inference" class="btn btn-secondary" disabled>停止检测</button>
+            </div>
+            <div class="prediction-result">
+                <div class="result-label" id="prediction-label">等待检测...</div>
+                <div class="confidence-bars">
+                    <div class="confidence-item">
+                        <span>吹气声:</span>
+                        <div class="confidence-bar">
+                            <div id="blow-confidence" class="confidence-fill blow"></div>
+                        </div>
+                        <span id="blow-percent">0%</span>
+                    </div>
+                    <div class="confidence-item">
+                        <span>非吹气声:</span>
+                        <div class="confidence-bar">
+                            <div id="not-blow-confidence" class="confidence-fill not-blow"></div>
+                        </div>
+                        <span id="not-blow-percent">0%</span>
+                    </div>
+                </div>
+            </div>
+            <canvas id="spectrogram-canvas"></canvas>
+        </section>
+    </div>
+
+    <script type="module" src="main.js"></script>
+</body>
+</html>
